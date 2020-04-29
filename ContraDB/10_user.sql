@@ -24,6 +24,6 @@ CREATE TABLE IF NOT EXISTS contraweb.user_session
     created_at   TIMESTAMP   NOT NULL,
     refreshed_at TIMESTAMP   NOT NULL,
 
-    CONSTRAINT user_session_pk PRIMARY KEY (username),
+    CONSTRAINT user_session_pk PRIMARY KEY (username, token),
     CONSTRAINT user_session_user_id_fk FOREIGN KEY (username) REFERENCES contraweb.user (username)
 );
