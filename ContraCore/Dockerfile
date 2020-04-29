@@ -17,6 +17,8 @@ COPY --from=build-env /opt/coredns/coredns /opt/coredns
 COPY Corefile /opt/
 COPY wait-for-it.sh /opt/wait-for-it.sh
 
+RUN /bin/chmod +x /opt/wait-for-it.sh
+
 EXPOSE 53/tcp
 EXPOSE 53/udp
 
