@@ -71,45 +71,14 @@ FROM (
      ) AS s2
      ON s1.t = s2.t AND s1.action = s2.action;
 
+--
 
-SELECT EventDate, count()
-FROM table
-GROUP BY EventDate
-ORDER BY EventDate WITH FILL;
-
-SELECT toStartOfHour(time) + (now() - toStartOfHour(now())) AS h,
-       action,
-       count(action)                                        AS c
-FROM log
-GROUP BY h, action
-ORDER BY h DESC WITH FILL STEP -3600;
-
-SELECT toStartOfHour(time) + (now() - toStartOfHour(now())) AS h,
-       action,
-       count(action)                                             AS c
-FROM log
-GROUP BY h, action
-ORDER BY h DESC WITH fill step -3600;
-
-SELECT DISTINCT action, s.h, s.action, s.c
-FROM log
-         INNER JOIN
-     (SELECT toStartOfHour(time) + (now() - toStartOfHour(now())) AS h,
-             action,
-             count(action)                                             AS c
-      FROM log
-      WHERE time > now() - toIntervalDay(7)
-      GROUP BY h, action
-      ORDER BY h
-          DESC WITH fill step -3600
-     ) s
-     ON log.action = s.action
-WHERE log.time > now() - toIntervalDay(7);
-
-select distinct l1.action from log l1 where l1.time > now() - toIntervalDay(7)
-    inner join log l2 on l1.action = l2.action;
-
-
+DROP TABLE IF EXISTS contralog.log_action_counts;
+CREATE VIEW contralog.log_action_counts AS
+SELECT action, count(action)
+FROM contralog.log
+WHERE time > now() - toIntervalDay(7)
+GROUP BY action;
 
 -- -- Detailed version
 -- DROP TABLE IF EXISTS contralog.log_actions_per_hour;
@@ -149,12 +118,3 @@ select distinct l1.action from log l1 where l1.time > now() - toIntervalDay(7)
 --     )
 -- GROUP BY hour, action
 -- ORDER BY hour DESC, max(c) DESC;
-
---
-
-DROP TABLE IF EXISTS contralog.log_action_counts;
-CREATE VIEW contralog.log_action_counts AS
-SELECT action, count(action)
-FROM contralog.log
-WHERE time > now() - toIntervalDay(7)
-GROUP BY action;
